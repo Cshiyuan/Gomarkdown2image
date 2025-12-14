@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/Cshiyuan/Gomarkdown2image/pkg/handlers"
 	"os"
 
+	"github.com/Cshiyuan/Gomarkdown2image/internal/config"
+	"github.com/Cshiyuan/Gomarkdown2image/internal/handlers"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,8 +27,8 @@ func main() {
 	router.Use(gin.Logger())             // Gin 内置日志
 	router.Use(handlers.RequestLogger()) // 自定义日志
 
-	// 设置最大上传文件大小 (10MB)
-	router.MaxMultipartMemory = 10 << 20 // 10MB
+	// 设置最大上传文件大小
+	router.MaxMultipartMemory = config.MaxMultipartMemory
 
 	// 健康检查端点
 	router.GET("/health", handlers.HealthCheckHandler)

@@ -1,7 +1,5 @@
 package handlers
 
-import "github.com/Cshiyuan/Gomarkdown2image/pkg/renderer"
-
 // ConvertRequest 表示 /api/convert 端点的请求体
 type ConvertRequest struct {
 	// Markdown 内容 (必需)
@@ -57,21 +55,4 @@ type ConvertResponse struct {
 	Format string `json:"format"` // 图片格式
 	Size   int    `json:"size"`   // 文件大小 (字节)
 	Width  int    `json:"width"`  // 图片宽度 (像素)
-}
-
-// GetDefaultImageFormat 获取默认图片格式
-func GetDefaultImageFormat() renderer.ImageFormat {
-	return renderer.FormatPNG
-}
-
-// ParseImageFormat 解析图片格式字符串
-func ParseImageFormat(format string) renderer.ImageFormat {
-	switch format {
-	case "jpeg", "jpg":
-		return renderer.FormatJPEG
-	case "webp":
-		return renderer.FormatWebP
-	default:
-		return renderer.FormatPNG
-	}
 }

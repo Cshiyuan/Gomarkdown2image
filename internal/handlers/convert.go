@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/Cshiyuan/Gomarkdown2image/pkg/converter"
 	"io"
 	"net/http"
 
+	"github.com/Cshiyuan/Gomarkdown2image/internal/config"
+	"github.com/Cshiyuan/Gomarkdown2image/internal/utils"
+	"github.com/Cshiyuan/Gomarkdown2image/pkg/converter"
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,15 +37,14 @@ func ConvertHandler(c *gin.Context) {
 		return
 	}
 
-	// 验证 Markdown 内容大小 (限制 10MB)
-	const maxMarkdownSize = 10 * 1024 * 1024
-	if len(req.Markdown) > maxMarkdownSize {
+	// 验证 Markdown 内容大小
+	if len(req.Markdown) > config.MaxMarkdownSize {
 		c.JSON(http.StatusBadRequest, APIResponse{
 			Success: false,
 			Error: &APIError{
 				Code:    "CONTENT_TOO_LARGE",
 				Message: "Markdown 内容过大",
-				Details: fmt.Sprintf("最大支持 %d MB", maxMarkdownSize/(1024*1024)),
+				Details: fmt.Sprintf("最大支持 %d MB", config.MaxMarkdownSize/(1024*1024)),
 			},
 		})
 		return
@@ -82,7 +83,7 @@ func ConvertHandler(c *gin.Context) {
 	}
 
 	// 返回图片
-	contentType := getContentType(string(opts.ImageFormat))
+	contentType := utils.GetContentType(opts.ImageFormat)
 	c.Data(http.StatusOK, contentType, imageData)
 }
 
@@ -131,15 +132,14 @@ func UploadHandler(c *gin.Context) {
 		return
 	}
 
-	// 验证文件大小 (限制 10MB)
-	const maxFileSize = 10 * 1024 * 1024
-	if file.Size > maxFileSize {
+	// 验证文件大小
+	if file.Size > config.MaxFileUploadSize {
 		c.JSON(http.StatusBadRequest, APIResponse{
 			Success: false,
 			Error: &APIError{
 				Code:    "FILE_TOO_LARGE",
 				Message: "文件过大",
-				Details: fmt.Sprintf("最大支持 %d MB", maxFileSize/(1024*1024)),
+				Details: fmt.Sprintf("最大支持 %d MB", config.MaxFileUploadSize/(1024*1024)),
 			},
 		})
 		return
@@ -207,7 +207,7 @@ func UploadHandler(c *gin.Context) {
 	}
 
 	// 返回图片
-	contentType := getContentType(string(opts.ImageFormat))
+	contentType := utils.GetContentType(opts.ImageFormat)
 	c.Data(http.StatusOK, contentType, imageData)
 }
 
@@ -235,7 +235,7 @@ func buildConvertOptions(req *ConvertRequest) *converter.ConvertOptions {
 		opts.FontFamily = req.FontFamily
 	}
 	if req.ImageFormat != "" {
-		opts.ImageFormat = ParseImageFormat(req.ImageFormat)
+		opts.ImageFormat = utils.ParseImageFormatOrDefault(req.ImageFormat)
 	}
 	if req.ImageQuality > 0 {
 		opts.ImageQuality = req.ImageQuality
@@ -271,7 +271,7 @@ func buildConvertOptionsFromForm(req *UploadRequest) *converter.ConvertOptions {
 		opts.FontFamily = req.FontFamily
 	}
 	if req.ImageFormat != "" {
-		opts.ImageFormat = ParseImageFormat(req.ImageFormat)
+		opts.ImageFormat = utils.ParseImageFormatOrDefault(req.ImageFormat)
 	}
 	if req.ImageQuality > 0 {
 		opts.ImageQuality = req.ImageQuality
@@ -281,16 +281,4 @@ func buildConvertOptionsFromForm(req *UploadRequest) *converter.ConvertOptions {
 	}
 
 	return opts
-}
-
-// getContentType 根据图片格式获取 Content-Type
-func getContentType(format string) string {
-	switch format {
-	case "jpeg", "jpg":
-		return "image/jpeg"
-	case "webp":
-		return "image/webp"
-	default:
-		return "image/png"
-	}
 }
