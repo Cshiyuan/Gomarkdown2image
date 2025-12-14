@@ -21,10 +21,10 @@ func main() {
 	router := gin.New()
 
 	// 应用中间件
-	router.Use(handlers.ErrorRecovery())    // 错误恢复
-	router.Use(handlers.SetupCORS())        // CORS 跨域
-	router.Use(gin.Logger())                // Gin 内置日志
-	router.Use(handlers.RequestLogger())    // 自定义日志
+	router.Use(handlers.ErrorRecovery()) // 错误恢复
+	router.Use(handlers.SetupCORS())     // CORS 跨域
+	router.Use(gin.Logger())             // Gin 内置日志
+	router.Use(handlers.RequestLogger()) // 自定义日志
 
 	// 设置最大上传文件大小 (10MB)
 	router.MaxMultipartMemory = 10 << 20 // 10MB

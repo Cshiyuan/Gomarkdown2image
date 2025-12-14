@@ -8,12 +8,12 @@ import (
 
 // HTMLTemplate HTML 模板配置
 type HTMLTemplate struct {
-	Title       string // 页面标题
-	Theme       string // 主题名称 (light, dark)
-	CustomCSS   string // 自定义 CSS
-	Width       int    // 页面宽度
-	FontSize    int    // 字体大小
-	FontFamily  string // 字体族
+	Title      string // 页面标题
+	Theme      string // 主题名称 (light, dark)
+	CustomCSS  string // 自定义 CSS
+	Width      int    // 页面宽度
+	FontSize   int    // 字体大小
+	FontFamily string // 字体族
 }
 
 // DefaultTemplate 返回默认模板配置

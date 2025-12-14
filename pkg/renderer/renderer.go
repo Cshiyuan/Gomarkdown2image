@@ -25,12 +25,12 @@ type Renderer interface {
 
 // RenderOptions 渲染选项
 type RenderOptions struct {
-	Width      int          // 视口宽度(默认 1200)
-	Height     int          // 视口高度(默认 0,表示自动高度)
-	Format     ImageFormat  // 图片格式(默认 PNG)
-	Quality    int          // 图片质量 1-100 (仅 JPEG 有效,默认 90)
-	FullPage   bool         // 是否全页截图(默认 true)
-	DevicePixelRatio float64 // 设备像素比(默认 1.0)
+	Width            int         // 视口宽度(默认 1200)
+	Height           int         // 视口高度(默认 0,表示自动高度)
+	Format           ImageFormat // 图片格式(默认 PNG)
+	Quality          int         // 图片质量 1-100 (仅 JPEG 有效,默认 90)
+	FullPage         bool        // 是否全页截图(默认 true)
+	DevicePixelRatio float64     // 设备像素比(默认 1.0)
 }
 
 // ImageFormat 图片格式

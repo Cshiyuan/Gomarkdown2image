@@ -34,20 +34,20 @@ type GoldmarkParser struct {
 func NewGoldmarkParser() *GoldmarkParser {
 	md := goldmark.New(
 		goldmark.WithExtensions(
-			extension.GFM,        // GitHub Flavored Markdown
+			extension.GFM,         // GitHub Flavored Markdown
 			extension.Typographer, // 智能标点符号
 			highlighting.NewHighlighting(
 				highlighting.WithStyle("monokai"), // 代码高亮主题
 				highlighting.WithFormatOptions(
-					html.WithLineNumbers(true),  // 显示行号
-					html.WithClasses(true),      // 使用 CSS 类
+					html.WithLineNumbers(true), // 显示行号
+					html.WithClasses(true),     // 使用 CSS 类
 				),
 			),
 		),
 		goldmark.WithRendererOptions(
 			goldmarkhtml.WithHardWraps(), // 硬换行
-			goldmarkhtml.WithXHTML(),      // 使用 XHTML 标签
-			goldmarkhtml.WithUnsafe(),     // 允许原始 HTML
+			goldmarkhtml.WithXHTML(),     // 使用 XHTML 标签
+			goldmarkhtml.WithUnsafe(),    // 允许原始 HTML
 		),
 	)
 
