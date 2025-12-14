@@ -1,6 +1,6 @@
 package handlers
 
-import "Gomarkdown2image/pkg/renderer"
+import "github.com/Cshiyuan/Gomarkdown2image/pkg/renderer"
 
 // ConvertRequest 表示 /api/convert 端点的请求体
 type ConvertRequest struct {

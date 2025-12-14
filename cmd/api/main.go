@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Gomarkdown2image/pkg/handlers"
+	"github.com/Cshiyuan/Gomarkdown2image/pkg/handlers"
 	"fmt"
 	"os"
 

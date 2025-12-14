@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"Gomarkdown2image/pkg/parser"
-	"Gomarkdown2image/pkg/renderer"
+	"github.com/Cshiyuan/Gomarkdown2image/pkg/parser"
+	"github.com/Cshiyuan/Gomarkdown2image/pkg/renderer"
 )
 
 // Converter Markdown 到图片转换器接口

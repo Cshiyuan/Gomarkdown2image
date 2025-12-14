@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"Gomarkdown2image/pkg/converter"
+	"github.com/Cshiyuan/Gomarkdown2image/pkg/converter"
 	"fmt"
 	"io"
 	"net/http"

@@ -1,4 +1,4 @@
-module Gomarkdown2image
+module github.com/Cshiyuan/Gomarkdown2image
 
 go 1.25.1
 
