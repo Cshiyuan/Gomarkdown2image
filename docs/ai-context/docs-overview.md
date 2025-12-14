@@ -35,16 +35,17 @@ Gomarkdown2image 的核心 AI 上下文文档。
 - **特点**: 架构设计 + 实现指导 + Go 最佳实践
 
 **[项目结构](/docs/ai-context/project-structure.md)** - *架构概览*
-- **用途**: 技术栈和计划的项目结构
+- **用途**: 技术栈和实际项目结构
 - **内容**:
-  - 项目元信息和当前状态
-  - 技术栈表格 (核心库和可选库)
-  - 计划的文件树结构
+  - 项目元信息和当前状态 (HTTP API 完成)
+  - 技术栈表格 (Goldmark, Rod, Gin 等)
+  - 完整文件树 (CLI + API 服务)
   - 核心架构设计
   - 接口设计规范
-  - 数据流详解
+  - HTTP API 端点文档
+  - 开发工作流和命令
   - 实现路线图
-- **特点**: 快速导航 + 技术参考
+- **特点**: 快速导航 + 技术参考 + API 参考
 
 **[文档概览](/docs/ai-context/docs-overview.md)** - *本文档*
 - **用途**: 文档系统导航和组织说明
@@ -97,13 +98,16 @@ Gomarkdown2image 的核心 AI 上下文文档。
 ### 对于开发者
 
 **快速入门**:
-- 用户指南 → `/README.md` (待创建)
+- 快速开始指南 → `/QUICKSTART.md`
+- 用户指南 → `/README.md`
+- API 文档 → `/docs/API.md`
 - 架构理解 → `/CLAUDE.md`
 - 技术栈 → `/docs/ai-context/project-structure.md`
 
 **开发指导**:
 - Go 编码标准 → `/CLAUDE.md` (第6节)
 - 开发命令 → `/CLAUDE.md` (第7节)
+- API 开发 → `/docs/IMPLEMENTATION.md`
 - 实现路线图 → `/CLAUDE.md` (第8节)
 
 ---
@@ -195,23 +199,33 @@ Gomarkdown2image 的核心 AI 上下文文档。
 
 ### 当前状态: 优秀 ✅
 
-- **覆盖率**: 100% (MVP 实现已完整文档化)
+- **覆盖率**: 100% (HTTP API v0.1.0 已完整文档化)
 - **准确性**: 100% (文档与实际代码一致)
 - **AI 优化**: 优秀 (结构化、实际文件路径、代码示例)
 - **维护性**: 良好 (清晰的实现状态标记)
 
 ### 已完成改进
 
-1. ✅ **用户文档**: README.md 已创建
-   - 包含完整使用指南和命令行参数说明
+1. ✅ **用户文档**: README.md 已更新
+   - 包含 CLI 和 API 两种使用方式
+   - 完整参数说明和示例
 
-2. ✅ **示例代码**: examples/ 目录已添加
-   - basic.md: 基础功能演示
-   - technical-doc.md: 多语言代码示例
+2. ✅ **API 文档**: docs/API.md 已创建
+   - 完整端点说明和参数验证规则
+   - Python/JavaScript/curl 调用示例
+   - 部署指南和性能优化建议
 
-3. ✅ **代码文档**: GoDoc 风格注释已添加
-   - 所有公开函数和类型都有文档注释
-   - 包级文档说明
+3. ✅ **快速开始**: QUICKSTART.md 已创建
+   - 5 分钟上手指南
+   - 多语言调用示例
+
+4. ✅ **实现说明**: docs/IMPLEMENTATION.md 已创建
+   - 架构设计和代码复用策略
+   - 安全性考虑和性能优化方向
+
+5. ✅ **示例代码**: examples/ 目录已扩展
+   - api-test.sh: 自动化 API 测试脚本
+   - basic.md, technical-doc.md: Markdown 示例
 
 ---
 
@@ -242,7 +256,10 @@ Gomarkdown2image 的核心 AI 上下文文档。
 ### 内部文档
 - **[CLAUDE.md](/CLAUDE.md)** - 主 AI 上下文
 - **[project-structure.md](/docs/ai-context/project-structure.md)** - 项目结构
-- **[README.md](/README.md)** - 用户文档 (待创建)
+- **[README.md](/README.md)** - 用户文档
+- **[QUICKSTART.md](/QUICKSTART.md)** - 快速开始指南
+- **[API.md](/docs/API.md)** - HTTP API 完整文档
+- **[IMPLEMENTATION.md](/docs/IMPLEMENTATION.md)** - 实现说明
 
 ### 配置文件
 - **[go.mod](/go.mod)** - Go 模块定义
@@ -251,11 +268,12 @@ Gomarkdown2image 的核心 AI 上下文文档。
 - **[Go 官方文档](https://go.dev/doc/)** - Go 语言参考
 - **[Effective Go](https://go.dev/doc/effective_go)** - Go 最佳实践
 - **[Goldmark](https://github.com/yuin/goldmark)** - Markdown 解析器
-- **[gg](https://github.com/fogleman/gg)** - 2D 图形库
+- **[Rod](https://github.com/go-rod/rod)** - 无头浏览器
+- **[Gin](https://github.com/gin-gonic/gin)** - Web 框架
 
 ---
 
-**文档版本**: 2025-12-12
-**项目版本**: 初始化阶段
-**文档架构**: 简化单层 (第1层为主)
+**文档版本**: 2025-12-14
+**项目版本**: HTTP API 完成 (v0.1.0)
+**文档架构**: 简化单层 (第1层为主) + 用户文档
 **维护者**: AI 代理 + 开发团队

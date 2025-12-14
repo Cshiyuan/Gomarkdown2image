@@ -1,0 +1,82 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Compiled binaries (in root directory only)
+/markdown2image
+/markdown2image-api
+/markdown2image-*
+!markdown2image.go
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+coverage.out
+coverage.html
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# Build artifacts
+dist/
+build/
+
+# Test output
+testdata/output/*.png
+testdata/output/*.jpg
+testdata/output/*.jpeg
+testdata/output/*.webp
+testdata/output/*.gif
+
+# Keep example images
+!examples/*.png
+!examples/*.jpg
+!examples/*.jpeg
+!examples/*.webp
+
+# IDE configurations
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Claude Code
+.claude/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Debug files
+debug
+__debug_bin
+
+# Air live reload tool
+tmp/

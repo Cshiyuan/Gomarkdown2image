@@ -9,7 +9,7 @@
 
 ---
 
-## 2. 项目状态: MVP 完成
+## 2. 项目状态: HTTP API 完成 (v0.1.0)
 
 **已实现功能:**
 - ✅ Markdown → HTML 转换 (Goldmark + GFM 扩展)
@@ -18,11 +18,13 @@
 - ✅ CLI 工具 (完整命令行参数支持)
 - ✅ 多格式输出 (PNG, JPEG, WebP)
 - ✅ 主题系统 (light, dark)
+- ✅ **HTTP API 服务** (Gin 框架,支持 JSON + 文件上传) 🆕
 
 **下一步:**
 - 实现 AI 增强功能 (Claude API / Ollama)
 - 添加自定义 CSS 模板支持
 - 性能优化和批量转换
+- API 性能优化 (连接池、缓存)
 
 ---
 
@@ -33,8 +35,10 @@
 ```
 Gomarkdown2image/
 ├── cmd/
-│   └── markdown2image/      # 命令行入口
-│       └── main.go           # 主程序 (CLI 参数处理和转换流程)
+│   ├── markdown2image/      # CLI 命令行工具
+│   │   └── main.go          # CLI 主程序
+│   └── api/                 # HTTP API 服务 🆕
+│       └── main.go          # API 服务入口
 │
 ├── pkg/                      # 公共库代码
 │   ├── parser/               # Markdown → HTML 转换
@@ -44,30 +48,41 @@ Gomarkdown2image/
 │   ├── renderer/             # HTML → 图片渲染
 │   │   └── renderer.go       # Rod 无头浏览器渲染器
 │   │
-│   └── converter/            # 转换器协调层
-│       └── converter.go      # 端到端转换逻辑
+│   ├── converter/            # 转换器协调层
+│   │   └── converter.go      # 端到端转换逻辑
+│   │
+│   └── handlers/             # HTTP 处理器 🆕
+│       ├── types.go          # 请求/响应数据结构
+│       ├── convert.go        # 转换端点 (JSON + 上传)
+│       └── middleware.go     # 中间件 (CORS, 日志, 恢复)
 │
-├── internal/                 # 内部实现 (未使用,预留扩展)
+├── internal/                 # 内部实现 (预留扩展)
 │   ├── config/               # 配置管理
 │   └── utils/                # 工具函数
 │
-├── testdata/                 # 测试数据
-│   ├── input/                # 测试输入
-│   └── output/               # 测试输出 (生成的图片)
+├── docs/                     # 文档 🆕
+│   ├── ai-context/           # AI 上下文文档
+│   │   ├── project-structure.md
+│   │   └── docs-overview.md
+│   ├── API.md                # HTTP API 完整文档 🆕
+│   └── IMPLEMENTATION.md     # 实现说明 🆕
 │
-├── examples/                 # 示例 Markdown 文件
+├── examples/                 # 示例文件
 │   ├── basic.md              # 基础功能示例
-│   └── technical-doc.md      # 技术文档示例
+│   ├── technical-doc.md      # 技术文档示例
+│   └── api-test.sh           # API 测试脚本 🆕
 │
-├── docs/ai-context/          # AI 上下文文档
-│   ├── project-structure.md  # 项目结构说明
-│   └── docs-overview.md      # 文档概览
+├── testdata/                 # 测试数据
+│   ├── input/
+│   └── output/
 │
 ├── go.mod                    # Go 模块定义
 ├── go.sum                    # 依赖校验和
-├── README.md                 # 用户文档
+├── README.md                 # 用户文档 (已更新)
+├── QUICKSTART.md             # 快速开始指南 🆕
 ├── CLAUDE.md                 # 本文档
-└── markdown2image            # 编译后的可执行文件
+├── markdown2image            # CLI 可执行文件
+└── markdown2image-api        # API 可执行文件 🆕
 ```
 
 ---
@@ -442,6 +457,17 @@ go mod why <package>
 - [x] 代码块样式 (Monokai 主题)
 - [x] 表格渲染
 - [x] 引用块和列表样式
+
+### 阶段 3.5: HTTP API 服务 ✅ 完成 (2025-12-14)
+- [x] Gin 框架集成
+- [x] POST /api/convert 端点 (JSON 方式)
+- [x] POST /api/upload 端点 (文件上传方式)
+- [x] 请求参数验证 (10 个配置参数)
+- [x] CORS 中间件
+- [x] 日志和错误恢复中间件
+- [x] 健康检查端点
+- [x] 完整 API 文档
+- [x] 测试脚本和示例
 
 ### 阶段 4: AI 增强功能 🚧 规划中
 - [ ] Claude API 集成

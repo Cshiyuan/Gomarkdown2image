@@ -10,9 +10,14 @@
 - ✅ **多格式输出**: 支持 PNG, JPEG, WebP 格式
 - ✅ **自定义样式**: 支持亮色/暗色主题,可自定义字体和样式
 - ✅ **GFM 扩展**: 支持表格、删除线、任务列表等 GitHub 风格特性
+- ✅ **HTTP API**: 提供 RESTful API 接口,支持 JSON 和文件上传两种方式
 - 🚧 **AI 增强**: (计划中) 支持 AI 内容润色和增强
 
 ## 🚀 快速开始
+
+Gomarkdown2image 提供两种使用方式:
+1. **命令行工具 (CLI)** - 适合本地批量转换
+2. **HTTP API 服务** - 适合集成到 Web 应用
 
 ### 安装
 
@@ -21,14 +26,18 @@
 git clone https://github.com/yourusername/Gomarkdown2image.git
 cd Gomarkdown2image
 
-# 构建
+# 构建 CLI 工具
 go build -o markdown2image ./cmd/markdown2image
+
+# 构建 API 服务
+go build -o markdown2image-api ./cmd/api
 
 # 或安装到 $GOPATH/bin
 go install ./cmd/markdown2image
+go install ./cmd/api
 ```
 
-### 基础用法
+### 方式 1: 命令行工具 (CLI)
 
 ```bash
 # 基本转换
@@ -42,6 +51,62 @@ go install ./cmd/markdown2image
 
 # 自定义宽度和字体大小
 ./markdown2image -input doc.md -output doc.png -width 1920 -font-size 18
+```
+
+### 方式 2: HTTP API 服务
+
+#### 启动服务
+
+```bash
+# 启动 API 服务 (默认端口 8080)
+./markdown2image-api
+
+# 或指定端口
+PORT=3000 ./markdown2image-api
+```
+
+#### API 使用示例
+
+**JSON 方式转换**:
+```bash
+curl -X POST http://localhost:8080/api/convert \
+  -H "Content-Type: application/json" \
+  -d '{
+    "markdown": "# Hello World\n\nThis is **bold** text.",
+    "theme": "dark",
+    "imageFormat": "png"
+  }' \
+  --output output.png
+```
+
+**文件上传方式**:
+```bash
+curl -X POST http://localhost:8080/api/upload \
+  -F "file=@document.md" \
+  -F "theme=light" \
+  -F "imageFormat=webp" \
+  --output output.webp
+```
+
+**Python 调用示例**:
+```python
+import requests
+
+response = requests.post(
+    'http://localhost:8080/api/convert',
+    json={
+        'markdown': '# Hello from Python',
+        'theme': 'dark',
+        'imageFormat': 'png'
+    }
+)
+
+with open('output.png', 'wb') as f:
+    f.write(response.content)
+```
+
+**详细 API 文档**: 查看 [docs/API.md](docs/API.md)
+
 ```
 
 ## 📋 命令行参数
@@ -119,7 +184,9 @@ HTML 内容
 ```
 Gomarkdown2image/
 ├── cmd/
-│   └── markdown2image/      # 命令行入口
+│   ├── markdown2image/      # CLI 命令行工具
+│   │   └── main.go
+│   └── api/                 # HTTP API 服务
 │       └── main.go
 ├── pkg/
 │   ├── parser/              # Markdown → HTML
@@ -127,10 +194,17 @@ Gomarkdown2image/
 │   │   └── template.go      # HTML 模板
 │   ├── renderer/            # HTML → 图片
 │   │   └── renderer.go      # Rod 渲染器
-│   └── converter/           # 核心转换器
-│       └── converter.go     # 协调 Parser 和 Renderer
+│   ├── converter/           # 核心转换器
+│   │   └── converter.go     # 协调 Parser 和 Renderer
+│   └── handlers/            # HTTP 处理器
+│       ├── types.go         # 请求/响应数据结构
+│       ├── convert.go       # 转换端点
+│       └── middleware.go    # 中间件
+├── docs/
+│   └── API.md               # API 文档
 ├── examples/                # 示例文件
-│   └── basic.md
+│   ├── basic.md
+│   └── api-test.sh          # API 测试脚本
 ├── testdata/                # 测试数据
 │   ├── input/
 │   └── output/
@@ -171,6 +245,7 @@ go vet ./...
 - [x] 无头浏览器渲染
 - [x] 多格式输出 (PNG, JPEG, WebP)
 - [x] 自定义样式和主题
+- [x] HTTP API 服务 (JSON + 文件上传)
 - [ ] AI 内容增强 (Claude API / Ollama)
 - [ ] 自定义 CSS 模板
 - [ ] 批量转换
