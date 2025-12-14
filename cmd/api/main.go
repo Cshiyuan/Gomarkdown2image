@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/Cshiyuan/Gomarkdown2image/pkg/handlers"
 	"fmt"
+	"github.com/Cshiyuan/Gomarkdown2image/pkg/handlers"
 	"os"
 
 	"github.com/gin-gonic/gin"
