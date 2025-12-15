@@ -157,9 +157,9 @@ func TestWrapHTML(t *testing.T) {
 			name:    "暗色主题",
 			content: "<h1>Title</h1>",
 			template: &HTMLTemplate{
-				Title:  "Dark Theme",
-				Theme:  "dark",
-				Width:  1400,
+				Title: "Dark Theme",
+				Theme: "dark",
+				Width: 1400,
 			},
 			wantParts: []string{
 				"<title>Dark Theme</title>",

@@ -17,6 +17,15 @@ type ConvertRequest struct {
 	ImageFormat      string  `json:"imageFormat,omitempty" binding:"omitempty,oneof=png jpeg webp"` // 图片格式
 	ImageQuality     int     `json:"imageQuality,omitempty" binding:"omitempty,min=1,max=100"`      // 图片质量 (1-100)
 	DevicePixelRatio float64 `json:"devicePixelRatio,omitempty" binding:"omitempty,min=0.5,max=4"`  // 设备像素比
+
+	// AI 增强选项 (新增)
+	ParserMode       string `json:"parserMode,omitempty" binding:"omitempty,oneof=traditional ai"` // 解析器模式
+	AIProvider       string `json:"aiProvider,omitempty" binding:"omitempty,oneof=gemini ollama"`  // AI 提供器
+	AIModel          string `json:"aiModel,omitempty"`                                             // AI 模型名称
+	AIAPIKey         string `json:"aiApiKey,omitempty"`                                            // AI API 密钥
+	AIEndpoint       string `json:"aiEndpoint,omitempty"`                                          // AI 服务端点
+	AIPromptTemplate string `json:"aiPromptTemplate,omitempty"`                                    // 提示词模板
+	AICustomPrompt   string `json:"aiCustomPrompt,omitempty"`                                      // 自定义提示词
 }
 
 // UploadRequest 表示 /api/upload 端点的表单字段
@@ -33,6 +42,15 @@ type UploadRequest struct {
 	ImageFormat      string  `form:"imageFormat" binding:"omitempty,oneof=png jpeg webp"`
 	ImageQuality     int     `form:"imageQuality" binding:"omitempty,min=1,max=100"`
 	DevicePixelRatio float64 `form:"devicePixelRatio" binding:"omitempty,min=0.5,max=4"`
+
+	// AI 增强选项 (新增)
+	ParserMode       string `form:"parserMode" binding:"omitempty,oneof=traditional ai"`
+	AIProvider       string `form:"aiProvider" binding:"omitempty,oneof=gemini ollama"`
+	AIModel          string `form:"aiModel"`
+	AIAPIKey         string `form:"aiApiKey"`
+	AIEndpoint       string `form:"aiEndpoint"`
+	AIPromptTemplate string `form:"aiPromptTemplate"`
+	AICustomPrompt   string `form:"aiCustomPrompt"`
 }
 
 // APIResponse 统一的 API 响应格式

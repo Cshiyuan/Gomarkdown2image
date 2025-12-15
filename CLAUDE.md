@@ -9,7 +9,7 @@
 
 ---
 
-## 2. 项目状态: HTTP API 完成 (v0.1.0)
+## 2. 项目状态: AI 增强功能完成 (v0.2.0)
 
 **已实现功能:**
 - ✅ Markdown → HTML 转换 (Goldmark + GFM 扩展)
@@ -18,13 +18,17 @@
 - ✅ CLI 工具 (完整命令行参数支持)
 - ✅ 多格式输出 (PNG, JPEG, WebP)
 - ✅ 主题系统 (light, dark)
-- ✅ **HTTP API 服务** (Gin 框架,支持 JSON + 文件上传) 🆕
+- ✅ HTTP API 服务 (Gin 框架,支持 JSON + 文件上传)
+- ✅ **AI 增强功能** (Google Gemini + Ollama 本地模型) 🆕
+- ✅ **可插拔 Parser Provider 架构** 🆕
+- ✅ **多种 AI 提示词模板** (增强、翻译、格式化等) 🆕
 
 **下一步:**
-- 实现 AI 增强功能 (Claude API / Ollama)
+- 添加 CLI AI 参数支持
 - 添加自定义 CSS 模板支持
 - 性能优化和批量转换
 - API 性能优化 (连接池、缓存)
+- 完善 AI 功能文档和示例
 
 ---
 
@@ -43,18 +47,30 @@ Gomarkdown2image/
 ├── pkg/                      # 公共库代码
 │   ├── parser/               # Markdown → HTML 转换
 │   │   ├── parser.go         # Goldmark 解析器实现
+│   │   ├── parser_test.go    # Parser 单元测试
 │   │   └── template.go       # HTML 模板和样式系统
 │   │
 │   ├── renderer/             # HTML → 图片渲染
 │   │   └── renderer.go       # Rod 无头浏览器渲染器
 │   │
-│   ├── converter/            # 转换器协调层
-│   │   └── converter.go      # 端到端转换逻辑
+│   └── converter/            # 转换器协调层
+│       └── converter.go      # 端到端转换逻辑
+│
+├── internal/                 # 内部实现
+│   ├── config/               # 配置管理
+│   │   ├── defaults.go       # 默认值常量 (Title, Theme, Width 等)
+│   │   └── limits.go         # 限制常量 (MaxFileSize, 参数范围)
 │   │
-│   └── handlers/             # HTTP 处理器 🆕
-│       ├── types.go          # 请求/响应数据结构
-│       ├── convert.go        # 转换端点 (JSON + 上传)
-│       └── middleware.go     # 中间件 (CORS, 日志, 恢复)
+│   ├── handlers/             # HTTP 处理器 (应用层私有)
+│   │   ├── types.go          # 请求/响应数据结构
+│   │   ├── convert.go        # 转换端点 (JSON + 上传)
+│   │   └── middleware.go     # 中间件 (CORS, 日志, 恢复)
+│   │
+│   └── utils/                # 工具函数
+│       ├── format.go         # 图片格式解析和验证
+│       ├── format_test.go    # Format 单元测试 (100% 覆盖)
+│       ├── validation.go     # 输入参数验证
+│       └── validation_test.go # Validation 单元测试 (100% 覆盖)
 │
 ├── docs/                     # 文档 🆕
 │   ├── ai-context/           # AI 上下文文档
@@ -611,7 +627,141 @@ go mod verify
 
 ---
 
-**文档版本**: 2025-12-12
-**项目阶段**: 初始化 - 架构规划
+## 13. AI 增强功能架构 (v0.2.0 新增)
+
+### 13.1 核心架构
+
+```
+传统模式:
+Markdown → [GoldmarkParser] → HTML → Image
+
+AI 增强模式:
+Markdown → [AIParser] → AI 增强 → [GoldmarkParser] → HTML → Image
+                ↓
+          [AI Provider]
+           ├── Gemini
+           └── Ollama
+```
+
+### 13.2 实现组件
+
+**pkg/ai/** - AI 服务抽象层
+- `provider.go` - Provider 接口定义
+- `types.go` - 通用数据类型
+- `prompts.go` - 提示词模板管理
+- `errors.go` - 统一错误处理
+- `gemini/client.go` - Google Gemini 客户端
+- `ollama/client.go` - Ollama 本地模型客户端
+- `factory/factory.go` - Provider 工厂函数
+
+**pkg/parser/** - Parser Provider 架构
+- `provider.go` - Parser Provider 接口和实现
+  - `GoldmarkProvider` - 传统 Goldmark 解析器
+  - `AIParserProvider` - AI 增强解析器
+  - `AIParser` - AI 增强的 Markdown 解析器
+
+**核心特性:**
+- ✅ 可插拔架构 - 传统/AI 模式可自由切换
+- ✅ 降级策略 - AI 失败时自动回退到传统模式
+- ✅ 多 AI 后端 - 支持 Gemini 和 Ollama
+- ✅ 提示词模板 - 内置 enhance、translate、format 等模板
+- ✅ 自定义提示词 - 支持用户自定义 AI 指令
+
+### 13.3 API 使用示例
+
+**JSON 方式 (POST /api/convert):**
+```json
+{
+  "markdown": "# Hello World\nThis is a **test**.",
+  "parserMode": "ai",
+  "aiProvider": "gemini",
+  "aiModel": "gemini-2.0-flash-exp",
+  "aiApiKey": "YOUR_API_KEY",
+  "aiPromptTemplate": "enhance"
+}
+```
+
+**支持的配置参数:**
+- `parserMode`: "traditional" (默认) 或 "ai"
+- `aiProvider`: "gemini" 或 "ollama"
+- `aiModel`: 模型名称 (如 "gemini-2.0-flash-exp", "llama3.2")
+- `aiApiKey`: API 密钥 (Gemini 需要)
+- `aiEndpoint`: Ollama 端点 (默认 http://localhost:11434)
+- `aiPromptTemplate`: 模板名称 ("enhance", "translate", "format" 等)
+- `aiCustomPrompt`: 自定义提示词 (覆盖模板)
+
+### 13.4 内置提示词模板
+
+| 模板名称 | 功能 | 使用场景 |
+|---------|------|---------|
+| `enhance` | 润色和优化内容 | 提升文档质量和可读性 |
+| `translate` | 多语言翻译 | 文档本地化 |
+| `format` | 格式化和美化 | 统一文档格式风格 |
+| `explain_code` | 代码解释 | 为代码块添加注释 |
+| `summarize` | 内容总结 | 生成文档摘要 |
+
+### 13.5 环境变量配置
+
+推荐通过环境变量配置 API 密钥:
+```bash
+# Gemini API
+export GEMINI_API_KEY="your-api-key"
+
+# Ollama (本地无需配置)
+export OLLAMA_ENDPOINT="http://localhost:11434"
+```
+
+### 13.6 降级和错误处理
+
+- **自动降级**: AI 服务失败时自动使用传统 Goldmark 解析
+- **错误分类**: 
+  - `auth` - 认证错误 (API Key 无效)
+  - `rate_limit` - 速率限制
+  - `timeout` - 超时
+  - `network` - 网络错误
+  - `server_error` - 服务器错误
+- **重试策略**: 可配置的重试次数和退避策略
+
+### 13.7 性能考虑
+
+- **AI 调用延迟**: 10-30 秒 (取决于内容长度和模型)
+- **本地 Ollama**: 速度较快,但依赖本地硬件
+- **Gemini API**: 速度快,但有速率限制和成本
+- **缓存策略**: 建议在应用层实现结果缓存
+
+### 13.8 安全注意事项
+
+⚠️ **重要提醒:**
+- **不要**在客户端代码中硬编码 API Key
+- **不要**通过 API 公开传递 API Key (使用环境变量或服务器端配置)
+- **不要**将包含敏感信息的内容发送给 AI 服务
+- **建议**使用 Ollama 本地模型处理敏感内容
+
+---
+
+## 14. 开发时间线
+
+**v0.1.0** (2025-12-14)
+- 核心 Markdown → Image 功能
+- HTTP API 服务
+- 测试覆盖率达到 18.3%
+
+**v0.2.0** (2025-12-15)
+- ✅ AI 增强功能完整实现
+- ✅ Google Gemini 集成
+- ✅ Ollama 本地模型集成
+- ✅ Parser Provider 可插拔架构
+- ✅ 多种 AI 提示词模板
+- ✅ API 接口扩展支持 AI 参数
+
+**v0.3.0** (计划中)
+- CLI 工具 AI 参数支持
+- 完整的使用文档和示例
+- 性能优化和缓存策略
+- 更多 AI 提示词模板
+
+---
+
+**文档版本**: v0.2.0 (2025-12-15)
+**项目阶段**: AI 增强功能开发完成
 **Go 版本**: 1.25.1
-**维护者**: AI 代理 + 开发团队

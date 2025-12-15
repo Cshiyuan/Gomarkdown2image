@@ -37,15 +37,16 @@ Gomarkdown2image 的核心 AI 上下文文档。
 **[项目结构](/docs/ai-context/project-structure.md)** - *架构概览*
 - **用途**: 技术栈和实际项目结构
 - **内容**:
-  - 项目元信息和当前状态 (HTTP API 完成)
-  - 技术栈表格 (Goldmark, Rod, Gin 等)
-  - 完整文件树 (CLI + API 服务)
-  - 核心架构设计
-  - 接口设计规范
-  - HTTP API 端点文档
+  - 项目元信息和当前状态 (AI 增强功能完成 v0.2.0) 🆕
+  - 技术栈表格 (Goldmark, Rod, Gin, Gemini, Ollama 等)
+  - 完整文件树 (CLI + API 服务 + AI 服务层) 🆕
+  - 核心架构设计 (传统模式 + AI 增强模式) 🆕
+  - **AI 服务架构** (Provider Pattern, 双后端, 提示词系统) 🆕
+  - 接口设计规范 (包含 AI Provider 接口) 🆕
+  - HTTP API 端点文档 (17 个参数)
   - 开发工作流和命令
   - 实现路线图
-- **特点**: 快速导航 + 技术参考 + API 参考
+- **特点**: 快速导航 + 技术参考 + API 参考 + AI 架构说明
 
 **[文档概览](/docs/ai-context/docs-overview.md)** - *本文档*
 - **用途**: 文档系统导航和组织说明
@@ -199,10 +200,10 @@ Gomarkdown2image 的核心 AI 上下文文档。
 
 ### 当前状态: 优秀 ✅
 
-- **覆盖率**: 100% (HTTP API v0.1.0 已完整文档化)
+- **覆盖率**: 100% (HTTP API v0.1.0 + 代码重组 + AI 增强 v0.2.0 已完整文档化)
 - **准确性**: 100% (文档与实际代码一致)
 - **AI 优化**: 优秀 (结构化、实际文件路径、代码示例)
-- **维护性**: 良好 (清晰的实现状态标记)
+- **维护性**: 优秀 (及时更新,清晰的实现状态标记)
 
 ### 已完成改进
 
@@ -226,6 +227,31 @@ Gomarkdown2image 的核心 AI 上下文文档。
 5. ✅ **示例代码**: examples/ 目录已扩展
    - api-test.sh: 自动化 API 测试脚本
    - basic.md, technical-doc.md: Markdown 示例
+
+6. ✅ **代码重组** (2025-12-15): internal/ 架构实现
+   - 创建 internal/config/ (defaults.go, limits.go)
+   - 创建 internal/utils/ (format.go, validation.go)
+   - 移动 pkg/handlers/ → internal/handlers/
+   - 消除代码重复,实现单一真相来源
+
+7. ✅ **测试套件** (2025-12-15): 单元测试覆盖
+   - internal/utils/format_test.go (100% 覆盖率)
+   - internal/utils/validation_test.go (100% 覆盖率)
+   - pkg/parser/parser_test.go (89.3% 覆盖率)
+   - 总体 18.3% 覆盖率,70+ 测试用例
+
+8. ✅ **AI 增强功能** (2025-12-15): 完整 AI 服务架构实现 🆕
+   - 创建 pkg/ai/ 包 (Provider 抽象层)
+   - Gemini API 集成 (google/generative-ai-go v0.20.1)
+   - Ollama 本地模型集成 (ollama/ollama v0.13.3)
+   - Parser Provider 架构 (传统/AI 双模式)
+   - 5 个内置提示词模板 (enhance, translate, format, explain_code, summarize)
+   - 自定义提示词支持
+   - AI 错误处理和自动降级机制
+   - HTTP API 扩展 (7 个 AI 参数)
+   - 创建 examples/ai-example.sh 示例脚本
+   - 更新 CLAUDE.md (第13节: AI 增强功能架构)
+   - 更新 project-structure.md (AI 服务架构章节)
 
 ---
 
@@ -273,7 +299,7 @@ Gomarkdown2image 的核心 AI 上下文文档。
 
 ---
 
-**文档版本**: 2025-12-14
-**项目版本**: HTTP API 完成 (v0.1.0)
+**文档版本**: 2025-12-15
+**项目版本**: AI 增强功能完成 (v0.2.0)
 **文档架构**: 简化单层 (第1层为主) + 用户文档
 **维护者**: AI 代理 + 开发团队

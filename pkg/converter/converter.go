@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Cshiyuan/Gomarkdown2image/pkg/ai"
 	"github.com/Cshiyuan/Gomarkdown2image/pkg/parser"
 	"github.com/Cshiyuan/Gomarkdown2image/pkg/renderer"
 )
@@ -38,6 +39,16 @@ type ConvertOptions struct {
 	ImageQuality     int                  // 图片质量
 	FullPage         bool                 // 全页截图
 	DevicePixelRatio float64              // 设备像素比
+
+	// AI 增强选项 (新增)
+	ParserMode       string // 解析器模式: "traditional" (默认) 或 "ai"
+	AIProvider       string // AI 提供器: "gemini" 或 "ollama"
+	AIModel          string // AI 模型名称
+	AIAPIKey         string // AI API 密钥 (Gemini 需要)
+	AIEndpoint       string // AI 服务端点 (Ollama 使用)
+	AIPromptTemplate string // 提示词模板: "enhance", "translate", "format" 等
+	AICustomPrompt   string // 自定义提示词 (覆盖模板)
+	AIPromptData     map[string]interface{} // 提示词模板数据
 }
 
 // DefaultConvertOptions 返回默认转换选项
@@ -52,6 +63,13 @@ func DefaultConvertOptions() *ConvertOptions {
 		ImageQuality:     90,
 		FullPage:         true,
 		DevicePixelRatio: 1.0,
+		// AI 默认值
+		ParserMode:       "traditional", // 默认使用传统模式
+		AIProvider:       "gemini",
+		AIModel:          "gemini-2.0-flash-exp",
+		AIEndpoint:       "http://localhost:11434",
+		AIPromptTemplate: "enhance",
+		AIPromptData:     make(map[string]interface{}),
 	}
 }
 
@@ -85,9 +103,10 @@ func NewConverter() (Converter, error) {
 // Convert 将 Markdown 字节数组转换为图片字节数组
 //
 // 工作流程:
-//  1. Markdown → HTML (使用 Parser)
-//  2. HTML → 完整 HTML 文档 (应用模板)
-//  3. HTML 文档 → 图片 (使用 Renderer)
+//  1. 根据 ParserMode 创建对应的 Parser (传统/AI)
+//  2. Markdown → HTML (使用 Parser)
+//  3. HTML → 完整 HTML 文档 (应用模板)
+//  4. HTML 文档 → 图片 (使用 Renderer)
 //
 // 参数:
 //   - markdown: Markdown 文本字节数组
@@ -101,13 +120,33 @@ func (c *DefaultConverter) Convert(markdown []byte, opts *ConvertOptions) ([]byt
 		opts = DefaultConvertOptions()
 	}
 
-	// 步骤 1: 解析 Markdown → HTML
-	htmlContent, err := c.parser.Parse(markdown)
+	// 步骤 1: 根据 ParserMode 创建 Parser
+	var currentParser parser.Parser
+	var err error
+
+	if opts.ParserMode == "ai" {
+		// 创建 AI Parser
+		currentParser, err = c.createAIParser(opts)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create AI parser: %w", err)
+		}
+
+		// 如果是 AI Parser Provider,需要在完成后关闭
+		if closer, ok := currentParser.(interface{ Close() error }); ok {
+			defer closer.Close()
+		}
+	} else {
+		// 使用传统 Parser
+		currentParser = c.parser
+	}
+
+	// 步骤 2: 解析 Markdown → HTML
+	htmlContent, err := currentParser.Parse(markdown)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse markdown: %w", err)
 	}
 
-	// 步骤 2: 包装为完整的 HTML 文档
+	// 步骤 3: 包装为完整的 HTML 文档
 	tmpl := &parser.HTMLTemplate{
 		Title:      opts.Title,
 		Theme:      opts.Theme,
@@ -122,7 +161,7 @@ func (c *DefaultConverter) Convert(markdown []byte, opts *ConvertOptions) ([]byt
 		return nil, fmt.Errorf("failed to wrap HTML: %w", err)
 	}
 
-	// 步骤 3: 渲染 HTML → 图片
+	// 步骤 4: 渲染 HTML → 图片
 	renderOpts := &renderer.RenderOptions{
 		Width:            opts.Width,
 		Height:           0, // 自动高度
@@ -138,6 +177,37 @@ func (c *DefaultConverter) Convert(markdown []byte, opts *ConvertOptions) ([]byt
 	}
 
 	return imageData, nil
+}
+
+// createAIParser 根据配置创建 AI Parser
+func (c *DefaultConverter) createAIParser(opts *ConvertOptions) (parser.Parser, error) {
+	// 构建 AI 配置
+	aiConfig := &ai.Config{
+		Provider:   ai.ProviderType(opts.AIProvider),
+		APIKey:     opts.AIAPIKey,
+		BaseURL:    opts.AIEndpoint,
+		Model:      opts.AIModel,
+		Timeout:    30,
+		MaxRetries: 3,
+	}
+
+	// 创建 Parser Provider 配置
+	providerConfig := &parser.ProviderConfig{
+		Type:             parser.ProviderTypeAI,
+		AIConfig:         aiConfig,
+		AIPromptTemplate: opts.AIPromptTemplate,
+		AIPromptData:     opts.AIPromptData,
+		CustomPrompt:     opts.AICustomPrompt,
+	}
+
+	// 创建 Provider
+	provider, err := parser.NewProvider(providerConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	// 创建 Parser
+	return provider.CreateParser()
 }
 
 // ConvertFile 转换 Markdown 文件为图片文件

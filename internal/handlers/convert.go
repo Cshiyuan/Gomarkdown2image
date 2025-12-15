@@ -244,6 +244,29 @@ func buildConvertOptions(req *ConvertRequest) *converter.ConvertOptions {
 		opts.DevicePixelRatio = req.DevicePixelRatio
 	}
 
+	// AI 增强选项 (新增)
+	if req.ParserMode != "" {
+		opts.ParserMode = req.ParserMode
+	}
+	if req.AIProvider != "" {
+		opts.AIProvider = req.AIProvider
+	}
+	if req.AIModel != "" {
+		opts.AIModel = req.AIModel
+	}
+	if req.AIAPIKey != "" {
+		opts.AIAPIKey = req.AIAPIKey
+	}
+	if req.AIEndpoint != "" {
+		opts.AIEndpoint = req.AIEndpoint
+	}
+	if req.AIPromptTemplate != "" {
+		opts.AIPromptTemplate = req.AIPromptTemplate
+	}
+	if req.AICustomPrompt != "" {
+		opts.AICustomPrompt = req.AICustomPrompt
+	}
+
 	return opts
 }
 
@@ -278,6 +301,29 @@ func buildConvertOptionsFromForm(req *UploadRequest) *converter.ConvertOptions {
 	}
 	if req.DevicePixelRatio > 0 {
 		opts.DevicePixelRatio = req.DevicePixelRatio
+	}
+
+	// AI 增强选项 (新增)
+	if req.ParserMode != "" {
+		opts.ParserMode = req.ParserMode
+	}
+	if req.AIProvider != "" {
+		opts.AIProvider = req.AIProvider
+	}
+	if req.AIModel != "" {
+		opts.AIModel = req.AIModel
+	}
+	if req.AIAPIKey != "" {
+		opts.AIAPIKey = req.AIAPIKey
+	}
+	if req.AIEndpoint != "" {
+		opts.AIEndpoint = req.AIEndpoint
+	}
+	if req.AIPromptTemplate != "" {
+		opts.AIPromptTemplate = req.AIPromptTemplate
+	}
+	if req.AICustomPrompt != "" {
+		opts.AICustomPrompt = req.AICustomPrompt
 	}
 
 	return opts
