@@ -517,7 +517,7 @@ A: 见"性能优化建议"章节,使用连接池、缓存和限流。
 
 **开发环境**:
 ```bash
-git clone https://github.com/yourusername/Gomarkdown2image.git
+git clone https://github.com/Cshiyuan/Gomarkdown2image.git
 cd Gomarkdown2image
 go mod download
 go run cmd/api/main.go
@@ -538,5 +538,5 @@ MIT License
 
 ## 联系方式
 
-- GitHub: https://github.com/yourusername/Gomarkdown2image
-- Issues: https://github.com/yourusername/Gomarkdown2image/issues
+- GitHub: https://github.com/Cshiyuan/Gomarkdown2image
+- Issues: https://github.com/Cshiyuan/Gomarkdown2image/issues

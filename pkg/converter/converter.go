@@ -41,13 +41,13 @@ type ConvertOptions struct {
 	DevicePixelRatio float64              // 设备像素比
 
 	// AI 增强选项 (新增)
-	ParserMode       string // 解析器模式: "traditional" (默认) 或 "ai"
-	AIProvider       string // AI 提供器: "gemini" 或 "ollama"
-	AIModel          string // AI 模型名称
-	AIAPIKey         string // AI API 密钥 (Gemini 需要)
-	AIEndpoint       string // AI 服务端点 (Ollama 使用)
-	AIPromptTemplate string // 提示词模板: "enhance", "translate", "format" 等
-	AICustomPrompt   string // 自定义提示词 (覆盖模板)
+	ParserMode       string                 // 解析器模式: "traditional" (默认) 或 "ai"
+	AIProvider       string                 // AI 提供器: "gemini" 或 "ollama"
+	AIModel          string                 // AI 模型名称
+	AIAPIKey         string                 // AI API 密钥 (Gemini 需要)
+	AIEndpoint       string                 // AI 服务端点 (Ollama 使用)
+	AIPromptTemplate string                 // 提示词模板: "enhance", "translate", "format" 等
+	AICustomPrompt   string                 // 自定义提示词 (覆盖模板)
 	AIPromptData     map[string]interface{} // 提示词模板数据
 }
 

@@ -112,12 +112,12 @@ func NewAIParserProvider(aiConfig *ai.Config, promptTemplate string, promptData 
 // CreateParser 创建 AI 增强的 Parser 实例
 func (p *AIParserProvider) CreateParser() (Parser, error) {
 	return &AIParser{
-		aiProvider:       p.aiProvider,
-		promptTemplate:   p.promptTemplate,
-		promptData:       p.promptData,
-		customPrompt:     p.customPrompt,
-		fallbackParser:   NewGoldmarkParser(),
-		enableFallback:   true,
+		aiProvider:     p.aiProvider,
+		promptTemplate: p.promptTemplate,
+		promptData:     p.promptData,
+		customPrompt:   p.customPrompt,
+		fallbackParser: NewGoldmarkParser(),
+		enableFallback: true,
 	}, nil
 }
 
@@ -136,12 +136,12 @@ func (p *AIParserProvider) Close() error {
 
 // AIParser AI 增强的 Markdown 解析器
 type AIParser struct {
-	aiProvider       ai.Provider
-	promptTemplate   string
-	promptData       map[string]interface{}
-	customPrompt     string
-	fallbackParser   Parser
-	enableFallback   bool
+	aiProvider     ai.Provider
+	promptTemplate string
+	promptData     map[string]interface{}
+	customPrompt   string
+	fallbackParser Parser
+	enableFallback bool
 }
 
 // Parse 使用 AI 增强 Markdown 内容,然后转换为 HTML

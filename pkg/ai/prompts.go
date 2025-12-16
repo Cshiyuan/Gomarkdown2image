@@ -3,6 +3,7 @@ package ai
 import (
 	"bytes"
 	"fmt"
+	"sync"
 	"text/template"
 )
 
@@ -84,6 +85,9 @@ var DefaultPrompts = map[string]string{
 {{.Content}}`,
 }
 
+// promptsMu 保护 DefaultPrompts 的读写锁
+var promptsMu sync.RWMutex
+
 // RenderPrompt 渲染提示词模板
 //
 // 参数:
@@ -94,8 +98,11 @@ var DefaultPrompts = map[string]string{
 //   - string: 渲染后的提示词
 //   - error: 渲染错误
 func RenderPrompt(templateName string, data map[string]interface{}) (string, error) {
-	// 获取模板字符串
+	// 获取模板字符串 (使用读锁保护)
+	promptsMu.RLock()
 	tmplStr, ok := DefaultPrompts[templateName]
+	promptsMu.RUnlock()
+
 	if !ok {
 		return "", fmt.Errorf("template not found: %s", templateName)
 	}
@@ -117,17 +124,23 @@ func RenderPrompt(templateName string, data map[string]interface{}) (string, err
 
 // GetPromptTemplate 获取提示词模板字符串
 func GetPromptTemplate(templateName string) (string, bool) {
+	promptsMu.RLock()
+	defer promptsMu.RUnlock()
 	tmplStr, ok := DefaultPrompts[templateName]
 	return tmplStr, ok
 }
 
 // SetPromptTemplate 设置自定义提示词模板
 func SetPromptTemplate(templateName string, templateStr string) {
+	promptsMu.Lock()
+	defer promptsMu.Unlock()
 	DefaultPrompts[templateName] = templateStr
 }
 
 // ListPromptTemplates 列出所有可用的提示词模板名称
 func ListPromptTemplates() []string {
+	promptsMu.RLock()
+	defer promptsMu.RUnlock()
 	names := make([]string, 0, len(DefaultPrompts))
 	for name := range DefaultPrompts {
 		names = append(names, name)

@@ -50,6 +50,19 @@ func ConvertHandler(c *gin.Context) {
 		return
 	}
 
+	// 验证自定义 CSS (防止 XSS 注入)
+	if err := utils.ValidateCustomCSS(req.CustomCSS); err != nil {
+		c.JSON(http.StatusBadRequest, APIResponse{
+			Success: false,
+			Error: &APIError{
+				Code:    "INVALID_CUSTOM_CSS",
+				Message: "自定义 CSS 验证失败",
+				Details: err.Error(),
+			},
+		})
+		return
+	}
+
 	// 创建转换器
 	conv, err := converter.NewConverter()
 	if err != nil {
@@ -174,6 +187,19 @@ func UploadHandler(c *gin.Context) {
 		return
 	}
 
+	// 验证自定义 CSS (防止 XSS 注入)
+	if err := utils.ValidateCustomCSS(formReq.CustomCSS); err != nil {
+		c.JSON(http.StatusBadRequest, APIResponse{
+			Success: false,
+			Error: &APIError{
+				Code:    "INVALID_CUSTOM_CSS",
+				Message: "自定义 CSS 验证失败",
+				Details: err.Error(),
+			},
+		})
+		return
+	}
+
 	// 创建转换器
 	conv, err := converter.NewConverter()
 	if err != nil {
@@ -211,120 +237,74 @@ func UploadHandler(c *gin.Context) {
 	c.Data(http.StatusOK, contentType, imageData)
 }
 
-// buildConvertOptions 从 ConvertRequest 构建 ConvertOptions
-func buildConvertOptions(req *ConvertRequest) *converter.ConvertOptions {
+// buildConvertOptionsFromParams 从 RequestParams 接口构建 ConvertOptions
+// 这是统一的构建函数,消除了 buildConvertOptions 和 buildConvertOptionsFromForm 的代码重复
+func buildConvertOptionsFromParams(params RequestParams) *converter.ConvertOptions {
 	opts := converter.DefaultConvertOptions()
 
-	// 应用用户指定的选项
-	if req.Title != "" {
-		opts.Title = req.Title
+	// HTML 模板选项
+	if v := params.GetTitle(); v != "" {
+		opts.Title = v
 	}
-	if req.Theme != "" {
-		opts.Theme = req.Theme
+	if v := params.GetTheme(); v != "" {
+		opts.Theme = v
 	}
-	if req.CustomCSS != "" {
-		opts.CustomCSS = req.CustomCSS
+	if v := params.GetCustomCSS(); v != "" {
+		opts.CustomCSS = v
 	}
-	if req.Width > 0 {
-		opts.Width = req.Width
+	if v := params.GetWidth(); v > 0 {
+		opts.Width = v
 	}
-	if req.FontSize > 0 {
-		opts.FontSize = req.FontSize
+	if v := params.GetFontSize(); v > 0 {
+		opts.FontSize = v
 	}
-	if req.FontFamily != "" {
-		opts.FontFamily = req.FontFamily
-	}
-	if req.ImageFormat != "" {
-		opts.ImageFormat = utils.ParseImageFormatOrDefault(req.ImageFormat)
-	}
-	if req.ImageQuality > 0 {
-		opts.ImageQuality = req.ImageQuality
-	}
-	if req.DevicePixelRatio > 0 {
-		opts.DevicePixelRatio = req.DevicePixelRatio
+	if v := params.GetFontFamily(); v != "" {
+		opts.FontFamily = v
 	}
 
-	// AI 增强选项 (新增)
-	if req.ParserMode != "" {
-		opts.ParserMode = req.ParserMode
+	// 图像渲染选项
+	if v := params.GetImageFormat(); v != "" {
+		opts.ImageFormat = utils.ParseImageFormatOrDefault(v)
 	}
-	if req.AIProvider != "" {
-		opts.AIProvider = req.AIProvider
+	if v := params.GetImageQuality(); v > 0 {
+		opts.ImageQuality = v
 	}
-	if req.AIModel != "" {
-		opts.AIModel = req.AIModel
+	if v := params.GetDevicePixelRatio(); v > 0 {
+		opts.DevicePixelRatio = v
 	}
-	if req.AIAPIKey != "" {
-		opts.AIAPIKey = req.AIAPIKey
+
+	// AI 增强选项
+	if v := params.GetParserMode(); v != "" {
+		opts.ParserMode = v
 	}
-	if req.AIEndpoint != "" {
-		opts.AIEndpoint = req.AIEndpoint
+	if v := params.GetAIProvider(); v != "" {
+		opts.AIProvider = v
 	}
-	if req.AIPromptTemplate != "" {
-		opts.AIPromptTemplate = req.AIPromptTemplate
+	if v := params.GetAIModel(); v != "" {
+		opts.AIModel = v
 	}
-	if req.AICustomPrompt != "" {
-		opts.AICustomPrompt = req.AICustomPrompt
+	if v := params.GetAIAPIKey(); v != "" {
+		opts.AIAPIKey = v
+	}
+	if v := params.GetAIEndpoint(); v != "" {
+		opts.AIEndpoint = v
+	}
+	if v := params.GetAIPromptTemplate(); v != "" {
+		opts.AIPromptTemplate = v
+	}
+	if v := params.GetAICustomPrompt(); v != "" {
+		opts.AICustomPrompt = v
 	}
 
 	return opts
 }
 
+// buildConvertOptions 从 ConvertRequest 构建 ConvertOptions
+func buildConvertOptions(req *ConvertRequest) *converter.ConvertOptions {
+	return buildConvertOptionsFromParams(req)
+}
+
 // buildConvertOptionsFromForm 从 UploadRequest 构建 ConvertOptions
 func buildConvertOptionsFromForm(req *UploadRequest) *converter.ConvertOptions {
-	opts := converter.DefaultConvertOptions()
-
-	// 应用用户指定的选项
-	if req.Title != "" {
-		opts.Title = req.Title
-	}
-	if req.Theme != "" {
-		opts.Theme = req.Theme
-	}
-	if req.CustomCSS != "" {
-		opts.CustomCSS = req.CustomCSS
-	}
-	if req.Width > 0 {
-		opts.Width = req.Width
-	}
-	if req.FontSize > 0 {
-		opts.FontSize = req.FontSize
-	}
-	if req.FontFamily != "" {
-		opts.FontFamily = req.FontFamily
-	}
-	if req.ImageFormat != "" {
-		opts.ImageFormat = utils.ParseImageFormatOrDefault(req.ImageFormat)
-	}
-	if req.ImageQuality > 0 {
-		opts.ImageQuality = req.ImageQuality
-	}
-	if req.DevicePixelRatio > 0 {
-		opts.DevicePixelRatio = req.DevicePixelRatio
-	}
-
-	// AI 增强选项 (新增)
-	if req.ParserMode != "" {
-		opts.ParserMode = req.ParserMode
-	}
-	if req.AIProvider != "" {
-		opts.AIProvider = req.AIProvider
-	}
-	if req.AIModel != "" {
-		opts.AIModel = req.AIModel
-	}
-	if req.AIAPIKey != "" {
-		opts.AIAPIKey = req.AIAPIKey
-	}
-	if req.AIEndpoint != "" {
-		opts.AIEndpoint = req.AIEndpoint
-	}
-	if req.AIPromptTemplate != "" {
-		opts.AIPromptTemplate = req.AIPromptTemplate
-	}
-	if req.AICustomPrompt != "" {
-		opts.AICustomPrompt = req.AICustomPrompt
-	}
-
-	return opts
+	return buildConvertOptionsFromParams(req)
 }

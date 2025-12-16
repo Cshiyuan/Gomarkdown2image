@@ -4,8 +4,10 @@
 package renderer
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/proto"
@@ -66,8 +68,22 @@ type RodRenderer struct {
 //   - 支持全页截图
 //   - 支持多种图片格式
 func NewRodRenderer() (*RodRenderer, error) {
-	// 启动无头浏览器
-	browser := rod.New().MustConnect()
+	// 启动无头浏览器 (使用 defer/recover 捕获 panic)
+	var browser *rod.Browser
+	var panicErr error
+
+	func() {
+		defer func() {
+			if r := recover(); r != nil {
+				panicErr = fmt.Errorf("failed to connect to browser: %v", r)
+			}
+		}()
+		browser = rod.New().Timeout(10 * time.Second).MustConnect()
+	}()
+
+	if panicErr != nil {
+		return nil, panicErr
+	}
 
 	return &RodRenderer{
 		browser: browser,
@@ -88,18 +104,52 @@ func (r *RodRenderer) RenderToImage(html string, opts *RenderOptions) ([]byte, e
 		opts = DefaultRenderOptions()
 	}
 
-	// 创建新页面
-	page := r.browser.MustPage("")
+	// 创建带超时的上下文 (30 秒总超时)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// 创建新页面 (使用 Page 而非 MustPage,避免 panic)
+	page, err := r.browser.Page(proto.TargetCreateTarget{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create page: %w", err)
+	}
 	defer page.Close()
 
+	// 设置页面上下文为带超时的 context
+	page = page.Context(ctx)
+
 	// 设置视口大小
-	page.MustSetViewport(opts.Width, opts.Height, opts.DevicePixelRatio, false)
+	err = page.SetViewport(&proto.EmulationSetDeviceMetricsOverride{
+		Width:             opts.Width,
+		Height:            opts.Height,
+		DeviceScaleFactor: opts.DevicePixelRatio,
+		Mobile:            false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to set viewport: %w", err)
+	}
 
 	// 注入 HTML 内容
-	page.MustSetDocumentContent(html).MustWaitLoad()
+	err = page.SetDocumentContent(html)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set document content: %w", err)
+	}
 
-	// 等待渲染完成
-	page.MustWaitIdle()
+	// 等待页面加载完成
+	err = page.WaitLoad()
+	if err != nil {
+		return nil, fmt.Errorf("failed to wait for page load: %w", err)
+	}
+
+	// 等待页面 idle (使用更短的超时,失败不影响主流程)
+	// 使用 5 秒超时,如果失败仅记录警告
+	idleCtx, idleCancel := context.WithTimeout(ctx, 5*time.Second)
+	defer idleCancel()
+	if err := page.Context(idleCtx).WaitIdle(1 * time.Second); err != nil {
+		// WaitIdle 失败不应阻止截图,仅在调试时记录
+		// 生产环境可以移除或使用日志库
+		// log.Printf("warning: page idle wait failed (continuing): %v", err)
+	}
 
 	// 构建截图参数
 	screenshotOpts := &proto.PageCaptureScreenshot{

@@ -23,7 +23,7 @@ Gomarkdown2image 提供两种使用方式:
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/Gomarkdown2image.git
+git clone https://github.com/Cshiyuan/Gomarkdown2image.git
 cd Gomarkdown2image
 
 # 构建 CLI 工具
@@ -269,5 +269,5 @@ MIT License
 ---
 
 **生成工具**: Gomarkdown2image v0.1.0
-**作者**: Your Name
-**GitHub**: https://github.com/yourusername/Gomarkdown2image
+**作者**: Cshiyuan
+**GitHub**: https://github.com/Cshiyuan/Gomarkdown2image

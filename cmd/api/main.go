@@ -53,7 +53,7 @@ func main() {
 				"convert": "POST /api/convert",
 				"upload":  "POST /api/upload",
 			},
-			"docs": "https://github.com/yourusername/Gomarkdown2image",
+			"docs": "https://github.com/Cshiyuan/Gomarkdown2image",
 		})
 	})
 

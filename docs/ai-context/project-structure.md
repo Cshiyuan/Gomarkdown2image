@@ -108,12 +108,17 @@ github.com/Cshiyuan/Gomarkdown2image/
 │   ├── utils/                    # 工具函数 (消除代码重复)
 │   │   ├── format.go             # 图片格式解析 (ParseImageFormat, GetContentType)
 │   │   ├── format_test.go        # 格式测试 (11 个测试用例,100% 覆盖率)
-│   │   ├── validation.go         # 参数验证 (ValidateQuality, ValidateWidth 等 5 个函数)
-│   │   └── validation_test.go    # 验证测试 (40 个测试用例,100% 覆盖率)
+│   │   ├── validation.go         # 参数验证 + XSS 防护 (6 个验证函数)
+│   │   │                         # - ValidateQuality/Width/FontSize/DevicePixelRatio
+│   │   │                         # - ValidateTheme
+│   │   │                         # - ValidateCustomCSS() (12 个禁止模式 XSS 防护) 🆕
+│   │   ├── validation_test.go    # 验证测试 (40+ 个测试用例,100% 覆盖率)
+│   │   └── validation_css_test.go # CustomCSS XSS 防护测试 (14 个安全测试用例) 🆕
 │   │
 │   └── handlers/                 # HTTP 处理器 (应用层,非公共 API)
-│       ├── types.go              # 请求/响应数据结构 (ConvertRequest, UploadRequest)
+│       ├── types.go              # 请求/响应数据结构 + RequestParams 接口 (17 个 getter) 🆕
 │       ├── convert.go            # 转换端点 (ConvertHandler, UploadHandler)
+│       ├── convert_test.go       # 接口实现测试 (43 个子测试,参数映射验证) 🆕
 │       └── middleware.go         # 中间件 (CORS, 日志, 错误恢复, 健康检查)
 │
 ├── docs/                         # 文档

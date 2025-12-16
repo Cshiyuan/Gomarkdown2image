@@ -1,5 +1,26 @@
 package handlers
 
+// RequestParams 统一的请求参数接口
+// 用于消除 buildConvertOptions 和 buildConvertOptionsFromForm 的代码重复
+type RequestParams interface {
+	GetTitle() string
+	GetTheme() string
+	GetCustomCSS() string
+	GetWidth() int
+	GetFontSize() int
+	GetFontFamily() string
+	GetImageFormat() string
+	GetImageQuality() int
+	GetDevicePixelRatio() float64
+	GetParserMode() string
+	GetAIProvider() string
+	GetAIModel() string
+	GetAIAPIKey() string
+	GetAIEndpoint() string
+	GetAIPromptTemplate() string
+	GetAICustomPrompt() string
+}
+
 // ConvertRequest 表示 /api/convert 端点的请求体
 type ConvertRequest struct {
 	// Markdown 内容 (必需)
@@ -74,3 +95,41 @@ type ConvertResponse struct {
 	Size   int    `json:"size"`   // 文件大小 (字节)
 	Width  int    `json:"width"`  // 图片宽度 (像素)
 }
+
+// ===== ConvertRequest 实现 RequestParams 接口 =====
+
+func (r *ConvertRequest) GetTitle() string             { return r.Title }
+func (r *ConvertRequest) GetTheme() string             { return r.Theme }
+func (r *ConvertRequest) GetCustomCSS() string         { return r.CustomCSS }
+func (r *ConvertRequest) GetWidth() int                { return r.Width }
+func (r *ConvertRequest) GetFontSize() int             { return r.FontSize }
+func (r *ConvertRequest) GetFontFamily() string        { return r.FontFamily }
+func (r *ConvertRequest) GetImageFormat() string       { return r.ImageFormat }
+func (r *ConvertRequest) GetImageQuality() int         { return r.ImageQuality }
+func (r *ConvertRequest) GetDevicePixelRatio() float64 { return r.DevicePixelRatio }
+func (r *ConvertRequest) GetParserMode() string        { return r.ParserMode }
+func (r *ConvertRequest) GetAIProvider() string        { return r.AIProvider }
+func (r *ConvertRequest) GetAIModel() string           { return r.AIModel }
+func (r *ConvertRequest) GetAIAPIKey() string          { return r.AIAPIKey }
+func (r *ConvertRequest) GetAIEndpoint() string        { return r.AIEndpoint }
+func (r *ConvertRequest) GetAIPromptTemplate() string  { return r.AIPromptTemplate }
+func (r *ConvertRequest) GetAICustomPrompt() string    { return r.AICustomPrompt }
+
+// ===== UploadRequest 实现 RequestParams 接口 =====
+
+func (r *UploadRequest) GetTitle() string             { return r.Title }
+func (r *UploadRequest) GetTheme() string             { return r.Theme }
+func (r *UploadRequest) GetCustomCSS() string         { return r.CustomCSS }
+func (r *UploadRequest) GetWidth() int                { return r.Width }
+func (r *UploadRequest) GetFontSize() int             { return r.FontSize }
+func (r *UploadRequest) GetFontFamily() string        { return r.FontFamily }
+func (r *UploadRequest) GetImageFormat() string       { return r.ImageFormat }
+func (r *UploadRequest) GetImageQuality() int         { return r.ImageQuality }
+func (r *UploadRequest) GetDevicePixelRatio() float64 { return r.DevicePixelRatio }
+func (r *UploadRequest) GetParserMode() string        { return r.ParserMode }
+func (r *UploadRequest) GetAIProvider() string        { return r.AIProvider }
+func (r *UploadRequest) GetAIModel() string           { return r.AIModel }
+func (r *UploadRequest) GetAIAPIKey() string          { return r.AIAPIKey }
+func (r *UploadRequest) GetAIEndpoint() string        { return r.AIEndpoint }
+func (r *UploadRequest) GetAIPromptTemplate() string  { return r.AIPromptTemplate }
+func (r *UploadRequest) GetAICustomPrompt() string    { return r.AICustomPrompt }
