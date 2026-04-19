@@ -151,6 +151,6 @@ func BenchmarkValidateWidth(b *testing.B) {
 
 func BenchmarkValidateTheme(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ValidateTheme("light")
+		_ = ValidateTheme("light")
 	}
 }
