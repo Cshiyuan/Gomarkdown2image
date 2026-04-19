@@ -7,12 +7,6 @@ import (
 	"text/template"
 )
 
-// PromptTemplate 提示词模板
-type PromptTemplate struct {
-	name     string
-	template *template.Template
-}
-
 // DefaultPrompts 默认提示词模板集合
 var DefaultPrompts = map[string]string{
 	// enhance 增强和润色 Markdown 文档

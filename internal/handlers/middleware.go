@@ -50,7 +50,7 @@ func RequestLogger() gin.HandlerFunc {
 		clientIP := c.ClientIP()
 
 		// 使用 Gin 的日志格式 (修复: 使用 strconv.Itoa 而非 string(rune()))
-		gin.DefaultWriter.Write([]byte(
+		_, _ = gin.DefaultWriter.Write([]byte(
 			time.Now().Format("2006/01/02 - 15:04:05") +
 				" | " + method +
 				" | " + path +

@@ -145,11 +145,8 @@ func (r *RodRenderer) RenderToImage(html string, opts *RenderOptions) ([]byte, e
 	// 使用 5 秒超时,如果失败仅记录警告
 	idleCtx, idleCancel := context.WithTimeout(ctx, 5*time.Second)
 	defer idleCancel()
-	if err := page.Context(idleCtx).WaitIdle(1 * time.Second); err != nil {
-		// WaitIdle 失败不应阻止截图,仅在调试时记录
-		// 生产环境可以移除或使用日志库
-		// log.Printf("warning: page idle wait failed (continuing): %v", err)
-	}
+	// WaitIdle 失败不阻止截图,忽略错误
+	_ = page.Context(idleCtx).WaitIdle(1 * time.Second)
 
 	// 构建截图参数
 	screenshotOpts := &proto.PageCaptureScreenshot{

@@ -184,7 +184,7 @@ func TestGetContentType(t *testing.T) {
 // 基准测试
 func BenchmarkParseImageFormat(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ParseImageFormat("png")
+		_, _ = ParseImageFormat("png")
 	}
 }
 

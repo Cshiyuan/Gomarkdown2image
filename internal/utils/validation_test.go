@@ -139,13 +139,13 @@ func TestValidateTheme(t *testing.T) {
 // 基准测试
 func BenchmarkValidateQuality(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ValidateQuality(90)
+		_ = ValidateQuality(90)
 	}
 }
 
 func BenchmarkValidateWidth(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		ValidateWidth(1200)
+		_ = ValidateWidth(1200)
 	}
 }
 

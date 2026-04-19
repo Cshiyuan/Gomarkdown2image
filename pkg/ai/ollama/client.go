@@ -29,22 +29,10 @@ func newOllamaProvider(cfg *ai.Config) (*Provider, error) {
 		return nil, fmt.Errorf("invalid config: %w", err)
 	}
 
-	// 设置 Ollama 服务地址
-	baseURL := cfg.BaseURL
-	if baseURL == "" {
-		baseURL = "http://localhost:11434" // 默认地址
-	}
-
-	// 创建客户端
+	// 创建客户端 (Ollama 通过环境变量 OLLAMA_HOST 设置自定义地址)
 	client, err := api.ClientFromEnvironment()
 	if err != nil {
 		return nil, ai.NewError(ai.ErrorTypeNetwork, "failed to create Ollama client", err)
-	}
-
-	// 设置自定义 BaseURL(如果提供)
-	if cfg.BaseURL != "" {
-		// Ollama API 客户端会自动从环境变量或默认地址创建
-		// 如需自定义,可以通过环境变量 OLLAMA_HOST 设置
 	}
 
 	// 设置超时
